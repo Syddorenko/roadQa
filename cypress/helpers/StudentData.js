@@ -2,7 +2,7 @@ export const student = {
   name: "Artem Sydorenko",
   age: 24,
   averageGrade: getRandomGrade(),
-  multiplicationNumber: 7 ,
+  multiplicationNumber: 7,
 };
 
 function getRandomGrade() {

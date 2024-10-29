@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./lesson10.css">
+    <title>Task Demo</title>
+</head>
+<body>
+<div class="wrapper">
+    <h1>Task Demo</h1>
+    <div class="button-container">
+        <button onclick="handleDelayedLog()">Show Delayed Log</button>
+        <button onclick="handleFetchAll()">Fetch All (Promise.all)</button>
+        <button onclick="handleFetchRace()">Fetch Race (Promise.race)</button>
+        <button onclick="handleFetchAllAsync()">Fetch All (Async/Await)</button>
+        <button onclick="handleFetchRaceAsync()">Fetch Race (Async/Await)</button>
+    </div>
+    <div id="output" class="output">
+        <div class="output-title">Results will appear here:</div>
+    </div>
+</div>
+<script type="module">
+  import {ApiHandler} from './lesson10-services/api.js';
+
+  class TaskHandler {
+    static delayedLog(text, delay) {
+      setTimeout(() => {
+        document.getElementById('output').innerHTML = `<div class="output-title">Delayed Log Result:</div>${text}`;
+      }, delay);
+    }
+
+    static fetchAll() {
+      Promise.all([ApiHandler.fetchTodo(), ApiHandler.fetchUser()]).
+          then(([todo, user]) => {
+            document.getElementById('output').innerHTML =
+                `<div class="output-title">Promise.all Result:</div>Todo: ${JSON.stringify(
+                    todo)}, User: ${JSON.stringify(user)}`;
+          }).
+          catch(
+              error => document.getElementById('output').innerHTML = `<div class="output-title">Error:</div> ${error}`);
+    }
+
+    static fetchRace() {
+      Promise.race([ApiHandler.fetchTodo(), ApiHandler.fetchUser()]).
+          then(result => {
+            document.getElementById(
+                'output').innerHTML = `<div class="output-title">Promise.race Result:</div>${JSON.stringify(result)}`;
+          }).
+          catch(
+              error => document.getElementById('output').innerHTML = `<div class="output-title">Error:</div> ${error}`);
+    }
+
+    static async fetchAllAsync() {
+      try {
+        const [todo, user] = await Promise.all([ApiHandler.fetchTodo(), ApiHandler.fetchUser()]);
+        document.getElementById('output').innerHTML =
+            `<div class="output-title">Promise.all (async/await) Result:</div>Todo: ${JSON.stringify(
+                todo)}, User: ${JSON.stringify(user)}`;
+      } catch (error) {
+        document.getElementById('output').innerHTML = `<div class="output-title">Error:</div> ${error}`;
+      }
+    }
+
+    static async fetchRaceAsync() {
+      try {
+        const result = await Promise.race([ApiHandler.fetchTodo(), ApiHandler.fetchUser()]);
+        document.getElementById(
+            'output').innerHTML = `<div class="output-title">Promise.race (async/await) Result:</div>${JSON.stringify(
+            result)}`;
+      } catch (error) {
+        document.getElementById('output').innerHTML = `<div class="output-title">Error:</div> ${error}`;
+      }
+    }
+  }
+
+  window.handleDelayedLog = () => TaskHandler.delayedLog('Hello, world! This is delayed.', 2000);
+  window.handleFetchAll = () => TaskHandler.fetchAll();
+  window.handleFetchRace = () => TaskHandler.fetchRace();
+  window.handleFetchAllAsync = () => TaskHandler.fetchAllAsync();
+  window.handleFetchRaceAsync = () => TaskHandler.fetchRaceAsync();
+</script>
+</body>
+</html>
